@@ -25,6 +25,26 @@ func NewServer(ip string,port int) *Server{
 	}
 	return server
 }
+//监听Message广播消息Channel的goroutine，
+//一旦有消息就发送给全部的在线user。
+func (s *Server) ListenMessager(){
+	for {
+		msg:=<-s.Message
+		//将msg发送给全部的在线user
+		s.maplock.Lock()
+		for _,cli:=range s.OnlineMap{
+			cli.C<-msg
+		}
+		s.maplock.Unlock()
+	}
+}
+// 广播消息的方法
+func (s *Server)BroadCast(user *User,msg string){
+	sendMsg:="["+user.Addr+"]"+user.Name+":"+msg
+	s.Message<-sendMsg
+
+}
+
 //业务处理模块
 func (s *Server) Handler(conn net.Conn){
 	//...当前链接的业务
@@ -35,7 +55,13 @@ func (s *Server) Handler(conn net.Conn){
 	s.maplock.Lock()
      s.OnlineMap[user.Name]=user
 	s.maplock.Unlock()
-     
+     s.BroadCast(user,"已上线")
+     // 当前handler 阻塞
+     fmt.Println(user.Name,"已上线")
+     select{
+
+	 }
+
 }
 //启动服务器的接口
 func (s *Server)  Start(){
@@ -48,6 +74,8 @@ func (s *Server)  Start(){
 	}
 	//close listen socket
 	defer listener.Close()
+	//启动监听Message 的goroutine
+	go s.ListenMessager()
 	for {
 		//accept
 		conn,err:=listener.Accept()
