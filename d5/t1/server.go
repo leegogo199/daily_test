@@ -51,19 +51,16 @@ func (s *Server) Handler(conn net.Conn){
 	//...当前链接的业务
 	//fmt.Println("链接建立成功")
 	//用户上线，将用户加入到onlinemap中。
-     user:=NewUser(conn)
-	// 广播当前用户上线消息
-	s.maplock.Lock()
-     s.OnlineMap[user.Name]=user
-	s.maplock.Unlock()
-     s.BroadCast(user,"已上线")
+     user:=NewUser(conn,s)
+     user.Online()
      // 接受客户端发送的消息
      go func(){
      	buf:=make([]byte,4096)
      	for{
      		n,err:=conn.Read(buf)
      		if n==0{
-     			s.BroadCast(user,"已下线")
+     			user.Offline()
+
      			return
 			}
 			if err!=nil&&err!=io.EOF{
