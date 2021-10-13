@@ -1,6 +1,6 @@
 package main
-import(
-	"golang.org/x/net/dns/dnsmessage"
+
+import (
 	"net"
 	"strings"
 )
