@@ -1,6 +1,8 @@
 package main
 import(
+	"golang.org/x/net/dns/dnsmessage"
 	"net"
+	"strings"
 )
 type User struct{
 	Name string
@@ -53,7 +55,7 @@ func (u *User)SendMsg(msg string){
 }
 //处理业务
 func (u *User)DoMessage(msg string){
-   if msg="who"{
+   if msg=="who"{
 	// 查询当前在线用户；
 		u.server.maplock.lock()
 			for _,user:=range u.server.OnlineMap{
@@ -61,7 +63,24 @@ func (u *User)DoMessage(msg string){
 				u.SendMsg(onlineMsg)
 												}
 		u.server.maplock.Unlock()				
-	}else{
+	}else if len(msg)>7&& msg[:7]=="rename|"{
+		//消息格式 rename张三
+		newname:=strings.Split(msg,"|")[1]
+		//判断newname是否存在
+		_,ok:=u.server.OnlineMap[newname]
+		if ok{
+			u.SendMsg("当前用户名被使用、\n")
+
+		}else{
+			u.server.maplock.Lock()
+			delete(u.server.OnlineMap,u.Name)
+			u.server.OnlineMap[newname]=u
+			u.server.maplock.Unlock()
+			u.Name=newname
+			u.SendMsg("您已经更新用户名:"+u.Name+"\n")
+
+		}
+   } else{
 		u.server.BroadCast(u,msg)
 }
 }
