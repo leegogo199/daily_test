@@ -1,13 +1,19 @@
 package svc
 
-import "bookstore/rpc/add/internal/config"
+import (
+	"bookstore/rpc/add/internal/config"
+	"dailytest/daily_test/d12/bookstore/rpc/model"
+)
 
 type ServiceContext struct {
-	Config config.Config
+	c config.Config
+	Model model.BookModel
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
-		Config: c,
-	}
+		c: c,
+		Model:model.NewBookModel(sqlx.NewMysql(c.DataSource),c.Cache),
+
+}
 }
