@@ -2,14 +2,15 @@ syntax = "proto3";
 
 package add;
 
-message Request {
-  string ping = 1;
+message addReq {
+  string book = 1;
+  int64 price=2;
 }
 
-message Response {
-  string pong = 1;
+message addResp {
+  bool ok = 1;
 }
 
-service Add {
-  rpc Ping(Request) returns(Response);
+service  adder{
+  rpc add(addReq) returns(addResp);
 }

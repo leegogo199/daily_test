@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"dailytest/daily_test/d12/bookstore/rpc/add/adder"
 
 	"bookstore/api/internal/svc"
 	"bookstore/api/internal/types"
@@ -25,6 +26,15 @@ func NewAddLogic(ctx context.Context, svcCtx *svc.ServiceContext) AddLogic {
 
 func (l *AddLogic) Add(req types.AddReq) (*types.AddResp, error) {
 	// todo: add your logic here and delete this line
+	resp,err:=l.svcCtx.Adder.Add(l.ctx,&adder.AddReq{
+		Book:req.Book,
+		Price:req.Price,
+	})
+	if err!=nil{
+		return nil,err
+	}
 
-	return &types.AddResp{}, nil
+	return &types.AddResp{
+		Ok:resp.Ok,
+	}, nil
 }
