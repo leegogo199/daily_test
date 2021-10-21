@@ -1,5 +1,6 @@
 package znet
 
+import "dailytest/daily_test/d13/zinx/ziface"
 
 //iServer 的接口实现，定义一个server的服务器结构体
 type Server struct{
@@ -24,3 +25,15 @@ func (s *Server)Stop(){
 func (s *Server)Serve(){
 
 }
+
+//初始化server
+func NewServer(name string)ziface.IServer{
+	s:=&Server{
+		Name:name,
+		IPVsersion: "tcp4",
+		IP:"0.0.0.0",
+		Port:8999,
+	}
+	return s
+}
+
