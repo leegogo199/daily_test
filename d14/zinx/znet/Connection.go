@@ -45,13 +45,10 @@ func(c *Connection) StartReader() {
 			continue
 		}
 		// 调用当前链接绑定的HandleAPI
-		c.handleAPI(c.Conn,buf,cnt)
-		if err:=c.handleAPI;err!=nil{
+		if err:=c.handleAPI(c.Conn,buf,cnt);err!=nil{
 			fmt.Println("ConnID",c.ConnID,"handle is error",err)
 			break
 		}
-
-
 
 	}
 

@@ -17,9 +17,8 @@ func main(){
 		return
 	}
 	for {
-
 		//2 连接调用write写数据
-		_,err:=conn.Write([]byte("Hello Zinx v0.1.."))
+		_,err:=conn.Write([]byte("Hello Zinx v0.2.."))
 		if err!=nil{
 			fmt.Println("write conn err",err)
 			return
@@ -30,7 +29,7 @@ func main(){
 			fmt.Println("read buf error")
 			return
 		}
-		fmt.Printf("server call back:%s,cnt-%d \n",buf,cnt)
+		fmt.Printf("server call back:%s,cnt%d \n",buf[:cnt],cnt)
 		time.Sleep(1*time.Second)
 
 	}//3
