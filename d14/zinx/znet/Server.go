@@ -1,7 +1,7 @@
 package znet
 
 import (
-	"dailytest/daily_test/d13/zinx/ziface"
+	"dailytest/daily_test/d14/zinx/ziface"
 	"errors"
 	"fmt"
 	"net"
@@ -17,9 +17,12 @@ type Server struct{
 	IP string
 	//服务器绑定的端口号
 	Port int
+	//当前的server添加一个router。
+	Router ziface.IRouter
+
 }
 //定义当前客户端链接所绑定的业务处理函数（目前这个handle是写死的），以后应该由用户自定义handle方法
-func CallBackToClient(conn *net.TCPConn,data []byte,cnt int) error{
+/*func CallBackToClient(conn *net.TCPConn,data []byte,cnt int) error{
 	//回显的业务
 	fmt.Println("[Conn Handle] CallbackToClient...")
 	if _,err:=conn.Write(data[:cnt]);err!=nil{
@@ -29,7 +32,7 @@ func CallBackToClient(conn *net.TCPConn,data []byte,cnt int) error{
 	return nil
 
 
-}
+}*/
 
 
 //启动服务器
@@ -61,7 +64,7 @@ func (s *Server)Start(){
 			}
 			//已经与客户端建立连接，做一些业务,做一个最基本的512字节长度的回写业务
 			//将处理新连接的方法和conn进行绑定，得到我们的链接模块、
-			dealConn := NewConnection(conn, cid, CallBackToClient)
+			dealConn := NewConnection(conn, cid, s.Router)
 			cid++
 			//启动当前的链接业务处理
 			go dealConn.Start()
@@ -83,14 +86,19 @@ func (s *Server)Serve(){
 	//阻塞状态
 	select{}
 }
+func (s *Server)AddRouter(router ziface.IRouter){
+	s.Router=router
+	fmt.Println("Add Router Succ!!")
 
+}
 //初始化server
-func NewServer(name string)ziface.IServer{
+func NewServer(name string) ziface.IServer{
 	s:=&Server{
 		Name:name,
 		IPVersion: "tcp4",
 		IP:"0.0.0.0",
 		Port:8999,
+		Router:nil,
 	}
 	return s
 }

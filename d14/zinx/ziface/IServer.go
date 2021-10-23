@@ -8,6 +8,9 @@ type IServer interface{
 	Stop()
 	//运行服务器
 	Serve()
+	//添加路由
+	AdddRouter(router IRouter)
+
 }
 
 //
