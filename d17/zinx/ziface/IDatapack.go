@@ -5,13 +5,14 @@ package ziface
 //先读取固定长度的head包括 内容长度，消息id，再读取消息内容。
 //写的时候，先写长度，再写id，再写内容。
 //
+
 type IDataPack interface{
 	//获取包的长度方法
 	GetHeadLen() uint32
 	//封包方法
-	Pack(msg ziface.IMessage)([]byte,error)
+	Pack(msg IMessage)([]byte,error)
 	//拆包方法
-	Unpack([]byte)(ziface.IMessage,error)
+	Unpack([]byte)(IMessage,error)
 
 
 }
