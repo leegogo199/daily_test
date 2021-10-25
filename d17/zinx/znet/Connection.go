@@ -1,9 +1,10 @@
 package znet
 
 import (
-	"dailytest/daily_test/d17/zinx/utils"
 	"dailytest/daily_test/d17/zinx/ziface"
+	"errors"
 	"fmt"
+	"io"
 	"net"
 )
 
@@ -41,22 +42,56 @@ func(c *Connection) StartReader() {
 	defer c.Stop()
 	for {
 		//读取客户端的数据到buf中，最大512字节
-		buf:=make([]byte,utils.GlobalObject.MaxPackageSize)
-		_,err:=c.Conn.Read(buf)
-		if err!=nil{
-			fmt.Println("recv buf err",err)
-			continue
-		}
+
+
+		//buf:=make([]byte,utils.GlobalObject.MaxPackageSize)
+		//_,err:=c.Conn.Read(buf)
+		//if err!=nil{
+		//	fmt.Println("recv buf err",err)
+		//	continue
+		//}
 		// 调用当前链接绑定的HandleAPI
 		//if err:=c.handleAPI(c.Conn,buf,cnt);err!=nil{
 		//	fmt.Println("ConnID",c.ConnID,"handle is error",err)
 		//	break
 		//}
 
+		//创建一个拆包解包对象
+		dp:=NewDataPack()
+
+		//读取客户端的Msg Head 二进制流 8个字节
+		headData:=make([]byte,dp.GetHeadLen())
+		//拆包，得到msgID和 msgDatalen放在msg消息中
+		if _,err:=io.ReadFull(c.GetTCPConnection(),headData);err!=nil{
+			fmt.Println("read msg head error",err)
+			return
+		}
+		msg,err:=dp.Unpack(headData)
+		if err!=nil{
+			fmt.Println("unpack error",err)
+			break
+		}
+		//根据datalen，再次读去 data，放在msg.Data中。
+		var data []byte
+		if msg.GetMsgLen()>0{
+			data=make([]byte,msg.GetMsgLen())
+			if _,err:=io.ReadFull(c.GetTCPConnection(),data);err!=nil{
+				fmt.Println("read msg data error",err)
+				break
+			}
+
+		}
+		msg.SetData(data)
+
+
+
+		//
+		//
+
 		//得到当前conn数据的request请求数据
 		req:=Request{
 			conn:c,
-			data:buf,
+			msg:msg,
 		}
 		//调用路由处理数据。
 
@@ -72,6 +107,7 @@ func(c *Connection) StartReader() {
 	}
 
 }
+
 
 //启动链接，让当前的链接准备开始工作
 func (c *Connection ) Start(){
@@ -111,7 +147,24 @@ func (c *Connection) GetRemoteAddr() net.Addr{
 	return c.Conn.RemoteAddr()
 }
 
-//发送数据，将数据发送给客户端
-func (c *Connection) Send(data []byte) error{
+//提供一个SendMsg方法，将我们要发送给客户端的数据，先进行封包
+//再发送
+func (c *Connection)SendMsg(msgId uint32,data []byte) error{
+	if c.isClosed==true{
+		return errors.New("Connection close when send msg")
+	}
+	//将data进行封包，msgdatalen和msgid和data
+	dp:=NewDataPack()
+	binaryMsg,err:=dp.Pack(NewMsgPackage(msgId,data))
+	if err!=nil{
+		fmt.Println("Pack error msg id=",msgId)
+		return errors.New("Pack error msg")
+	}
+	//将数据发送给哭护短
+	if _,err:=c.Conn.Write(binaryMsg);err!=nil{
+		fmt.Println("Write msg id",msgId,"error",err)
+		return errors.New("conn write error")
+	}
+
 	return nil
 }
