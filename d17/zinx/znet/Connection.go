@@ -42,8 +42,6 @@ func(c *Connection) StartReader() {
 	defer c.Stop()
 	for {
 		//读取客户端的数据到buf中，最大512字节
-
-
 		//buf:=make([]byte,utils.GlobalObject.MaxPackageSize)
 		//_,err:=c.Conn.Read(buf)
 		//if err!=nil{
@@ -165,6 +163,5 @@ func (c *Connection)SendMsg(msgId uint32,data []byte) error{
 		fmt.Println("Write msg id",msgId,"error",err)
 		return errors.New("conn write error")
 	}
-
 	return nil
 }

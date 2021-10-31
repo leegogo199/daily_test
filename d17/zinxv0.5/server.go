@@ -1,8 +1,8 @@
 package main
 
 import (
-	"dailytest/daily_test/d16/zinx/ziface"
-	"dailytest/daily_test/d16/zinx/znet"
+	"dailytest/daily_test/d17/zinx/ziface"
+	"dailytest/daily_test/d17/zinx/znet"
 	"fmt"
 )
 
@@ -60,7 +60,7 @@ func (p *PingRouter) AfterHandle(request ziface.IRequest){
 
 func main(){
 	//1创建一个server句柄
-	s:=znet.NewServer("[zinx v 0.2]")
+	s:=znet.NewServer("[zinx v 0.5]")
 	//2 给当前zinx 框架添加自定义router
 	s.AddRouter(&PingRouter{})
 	//3启动server

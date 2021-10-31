@@ -13,10 +13,7 @@ type IRequest interface{
 	GetMsgID() uint32
 
 	//
-
 	//
-
 	//
-
 	//
 }
