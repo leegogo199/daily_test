@@ -5,9 +5,9 @@ Add:
   Etcd:
     Hosts:
       - localhost:2379
-    Key:add.rpc
+    Key: add.rpc
 Check:
   Etcd:
     Hosts:
       - localhost:2379
-    Key:check.rpc
+    Key: check.rpc

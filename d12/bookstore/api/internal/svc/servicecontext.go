@@ -4,7 +4,9 @@ import (
 	"bookstore/api/internal/config"
 	"dailytest/daily_test/d12/bookstore/rpc/add/adder"
 	"dailytest/daily_test/d12/bookstore/rpc/check/checker"
+	"github.com/tal-tech/go-zero/zrpc"
 )
+
 
 type ServiceContext struct {
 	Config config.Config
