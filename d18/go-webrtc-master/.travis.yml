@@ -1,0 +1,27 @@
+language: go
+
+addons:
+    apt:
+        sources:
+            - ubuntu-toolchain-r-test
+        packages:
+            - g++-5
+            - gcc-5
+
+matrix:
+    include:
+        - os: linux
+          dist: xenial
+          sudo: required
+          go: 1.6
+          env: CC="gcc-5" CXX="g++-5" OS="linux"
+        - os: osx
+
+install:
+    - go get -u github.com/smartystreets/goconvey
+
+script:
+    - test -z "$(go fmt .)"
+    - go vet .
+    - go test -v -race .
+    - CGO_CFLAGS="-fsanitize=address" CGO_CXXFLAGS="-fsanitize=address" CGO_LDFLAGS="-fsanitize=address" go test -v .

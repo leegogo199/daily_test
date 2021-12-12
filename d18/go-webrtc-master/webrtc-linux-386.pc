@@ -1,0 +1,17 @@
+pc=${pcfiledir}
+
+Name: webrtc
+Description: webrtc
+Version: 1
+
+Cflags: \
+	-I${pc}/include \
+	-DPOSIX \
+	-DWEBRTC_LINUX
+
+Libs: \
+	-L${pc}/lib \
+	-lwebrtc-linux-386-magic \
+	-ldl \
+	-lX11 \
+	-lrt
